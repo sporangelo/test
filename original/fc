@@ -1,7 +1,6 @@
-#!/bin/bash
 # Author: Steven Shiau <steven _at_ nchc org tw>
 # License: GPL
-
+#ronix
 ###
 ### functions for drbl-ocs, ocs-sr and ocs-onthefly
 ###
@@ -960,7 +959,7 @@ save_part_by_partclone() {
           ;;
      esac
     )
-   ) 3>&1 1>&2 2>&3) | tee /dev/tty) >> $infoPath"partcloneInfo"
+   ) 3>&1 1>&2 2>&3) | tee /dev/tty) > $infoPath"partcloneInfo"
 
   rc="$?"
   end_time="$(date +%s%N)"
@@ -970,23 +969,15 @@ save_part_by_partclone() {
      if [[ "$(tail -c 77 /var/log/partclone.log)" =~ "bitmap free count err," || "$(tail -c 77 /var/log/partclone.log)" =~ "UFS flag FS_UNCLEAN or FS_NEEDSFSCK" || "$(tail -c 77 /var/log/partclone.log)" =~ "bitmap error" || "$(tail -c 77 /var/log/partclone.log)" =~ "Windows or fix it by fsck" ]]
         then
            echo "true" > $infoPath"bitmapErr"
-           echo "*******************check disk************************"
+           echo "*******************************************"
            echo "I got this error:"
            tail -n 1 /var/log/partclone.log
            echo "Now, I'll run fsck, and try to clone again"
-           sleep 3
 	    if [ "$fs_p" == "ntfs" ]
 	    then
-		echo "Fixing ntfs partition" $source_dev
-#		echo "running ntfsfix $source_dev -fy".
-#		ntfsclone_save_extra_opt="--force --rescue"
-#		ntfsfix $source_dev
-		echo "mount -t ntfs-3g $source_dev /mnt"
-		mount -t ntfs-3g $source_dev /mnt
-		echo "sleep"
-		sleep 5
-		umount /mnt
-		echo "umount"
+		echo "running ntfsfix $source_dev -fy".
+		ntfsclone_save_extra_opt="--force --rescue"
+		ntfsfix $source_dev
 	    else
 		fsck.${fs_p} $source_dev -fy
 	    fi
@@ -1007,7 +998,7 @@ save_part_by_partclone() {
                        ;;
                  esac
                 )
-            )3>&1 1>&2 2>&3) | tee /dev/tty) >> $infoPath"partcloneInfo"
+            )3>&1 1>&2 2>&3) | tee /dev/tty) > $infoPath"partcloneInfo"
               rc="$?"
               end_time="$(date +%s%N)"
 
@@ -1211,7 +1202,7 @@ save_part_by_dd() {
             ;;
        esac
       )
-     ) 3>&1 1>&2 2>&3) | tee /dev/tty) >> $infoPath"partcloneInfo"
+     ) 3>&1 1>&2 2>&3) | tee /dev/tty) > $infoPath"partcloneInfo"
 
     rc="$?"
     end_time="$(date +%s%N)"
@@ -4274,7 +4265,7 @@ unicast_restore_by_partclone() {
     done
   ) | \
   $unzip_stdin_cmd | \
-  (( LC_ALL=C partclone.${fs_} $PARTCLONE_RESTORE_OPT -L $partclone_img_info_tmp -s - -r -o $part 3>&1 1>&2 2>&3) | tee /dev/tty) >> $infoPath"partcloneInfo"
+  (( LC_ALL=C partclone.${fs_} $PARTCLONE_RESTORE_OPT -L $partclone_img_info_tmp -s - -r -o $part 3>&1 1>&2 2>&3) | tee /dev/tty) > $infoPath"partcloneInfo"
 #zzz show restore progress $infoPath"partcloneInfo"
   rc="$?"
   end_time="$(date +%s%N)"
@@ -4359,7 +4350,7 @@ unicast_restore_by_dd() {
       done
     ) | \
     $unzip_stdin_cmd | \
-    (( LC_ALL=C partclone.dd $PARTCLONE_RESTORE_OPT -L $partclone_img_info_tmp -s - -r -o $part 3>&1 1>&2 2>&3) | tee /dev/tty) >> $infoPath"partcloneInfo"
+    (( LC_ALL=C partclone.dd $PARTCLONE_RESTORE_OPT -L $partclone_img_info_tmp -s - -r -o $part 3>&1 1>&2 2>&3) | tee /dev/tty) > $infoPath"partcloneInfo"
 #zzz show dd restore Progress "$infoPath$"partcloneInfo""
 	rc="$?"
     end_time="$(date +%s%N)"
